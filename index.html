@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080c12">
+<title>Breathe — Calm in 60 seconds</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: #080c12;
+    color: #e8f0f8;
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem 5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .screen.active { opacity: 1; pointer-events: all; }
+
+  /* ── HOME ── */
+  .home-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(38px, 10vw, 54px);
+    color: #e8f0f8;
+    text-align: center;
+    margin-bottom: 0.3rem;
+  }
+
+  .home-sub {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: clamp(15px, 4vw, 18px);
+    color: #4a7a9b;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .feeling-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: #2a4a6a;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .feelings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .feeling-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    color: #e8f0f8;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .feeling-btn:hover, .feeling-btn:active {
+    background: rgba(255,255,255,0.07);
+    transform: scale(0.98);
+  }
+
+  .f-emoji { font-size: 24px; width: 32px; text-align: center; }
+
+  .f-text { flex: 1; }
+  .f-name { font-size: 15px; font-weight: 500; display: block; }
+  .f-desc { font-size: 12px; color: #4a7a9b; margin-top: 1px; }
+
+  .f-arrow { color: #2a4a6a; font-size: 18px; }
+
+  /* ── BREATHE ── */
+  .breathe-feeling {
+    font-size: 13px;
+    color: #4a7a9b;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  .circle-area {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .outer-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+    animation: pulse-ring 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.08); opacity: 0.1; }
+  }
+
+  .breath-circle {
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+
+  .b-phase {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: #e8f0f8;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+
+  .b-num {
+    font-size: 64px;
+    font-weight: 200;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: #e8f0f8;
+  }
+
+  .b-msg {
+    font-size: 15px;
+    color: #4a7a9b;
+    font-style: italic;
+    text-align: center;
+    max-width: 260px;
+    line-height: 1.6;
+    min-height: 48px;
+    margin-bottom: 2rem;
+  }
+
+  .stop-btn {
+    padding: 12px 36px;
+    border-radius: 99px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: #4a7a9b;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .stop-btn:hover { background: rgba(255,255,255,0.05); color: #e8f0f8; }
+
+  /* ── DONE ── */
+  .done-emoji { font-size: 52px; margin-bottom: 1.2rem; display: block; text-align: center; }
+  .done-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 8vw, 40px);
+    color: #e8f0f8;
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+  .done-msg {
+    font-size: 16px;
+    color: #4a7a9b;
+    font-style: italic;
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+  .home-btn {
+    padding: 13px 36px;
+    border-radius: 99px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #e8f0f8;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .home-btn:hover { background: rgba(255,255,255,0.08); }
+
+  /* crisis */
+  .crisis {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 1rem;
+    text-align: center;
+    font-size: 11px;
+    color: #2a4a6a;
+    z-index: 100;
+  }
+  .crisis a { color: #3a6a8a; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* glow bg */
+  .glow-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: background 1.5s ease;
+  }
+
+  .screen > * { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="glow-bg" id="glowBg"></div>
+
+<!-- HOME -->
+<div class="screen active" id="homeScreen">
+  <h1 class="home-title">Breathe</h1>
+  <p class="home-sub">How are you feeling right now?</p>
+
+  <div class="feelings">
+    <button class="feeling-btn" onclick="start('panic')">
+      <span class="f-emoji">😰</span>
+      <span class="f-text">
+        <span class="f-name">Panic / Can't breathe</span>
+        <span class="f-desc">Heart racing, chest tight, overwhelmed</span>
+      </span>
+      <span class="f-arrow">›</span>
+    </button>
+
+    <button class="feeling-btn" onclick="start('anxiety')">
+      <span class="f-emoji">🌀</span>
+      <span class="f-text">
+        <span class="f-name">Anxious / Overthinking</span>
+        <span class="f-desc">Worried, restless, mind spinning</span>
+      </span>
+      <span class="f-arrow">›</span>
+    </button>
+
+    <button class="feeling-btn" onclick="start('sleep')">
+      <span class="f-emoji">🌙</span>
+      <span class="f-text">
+        <span class="f-name">Can't sleep</span>
+        <span class="f-desc">Lying awake, thoughts won't stop</span>
+      </span>
+      <span class="f-arrow">›</span>
+    </button>
+
+    <button class="feeling-btn" onclick="start('anger')">
+      <span class="f-emoji">🔥</span>
+      <span class="f-text">
+        <span class="f-name">Angry / Frustrated</span>
+        <span class="f-desc">Want to explode, losing control</span>
+      </span>
+      <span class="f-arrow">›</span>
+    </button>
+
+    <button class="feeling-btn" onclick="start('confidence')">
+      <span class="f-emoji">⚡</span>
+      <span class="f-text">
+        <span class="f-name">Need confidence</span>
+        <span class="f-desc">Exam, interview, nervous before something</span>
+      </span>
+      <span class="f-arrow">›</span>
+    </button>
+  </div>
+</div>
+
+<!-- BREATHE -->
+<div class="screen" id="breatheScreen">
+  <p class="breathe-feeling" id="bFeeling">Panic relief</p>
+
+  <div class="circle-area">
+    <div class="outer-ring" id="outerRing" style="width:240px;height:240px"></div>
+    <div class="breath-circle" id="bCircle">
+      <div class="b-phase" id="bPhase">—</div>
+      <div class="b-num" id="bNum">—</div>
+    </div>
+  </div>
+
+  <p class="b-msg" id="bMsg">Get comfortable. Starting now.</p>
+  <button class="stop-btn" onclick="goHome()">Stop</button>
+</div>
+
+<!-- DONE -->
+<div class="screen" id="doneScreen">
+  <span class="done-emoji" id="doneEmoji">🌊</span>
+  <h2 class="done-title" id="doneTitle">Well done.</h2>
+  <p class="done-msg" id="doneMsg">Your body is calmer now.</p>
+  <button class="home-btn" onclick="goHome()">Back to home</button>
+</div>
+
+<div class="crisis">
+  Need more help? &nbsp;·&nbsp;
+  <a href="tel:9152987821">iCall 91529-87821</a> &nbsp;·&nbsp;
+  <a href="tel:18005990019">Vandrevala 1800-599-0019</a> (free, 24/7)
+</div>
+
+<script>
+const MODES = {
+  panic: {
+    label: "Panic relief",
+    glow: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,120,120,0.07) 0%, transparent 70%)",
+    color: "#ff8080",
+    phases: [
+      { name: "Inhale",  dur: 4, msgs: ["You are not alone in this.", "Breathe in slowly, nose first.", "Your body knows how to heal.", "One breath at a time."] },
+      { name: "Hold",    dur: 3, msgs: ["Hold gently. You are safe.", "This feeling will pass.", "You have survived this before.", "Stay right here with me."] },
+      { name: "Exhale",  dur: 6, msgs: ["Let it all go. Slowly.", "Release the fear with your breath.", "Longer out than in. Good.", "You are doing so well."] },
+    ],
+    cycles: 6,
+    done: { emoji: "❤️", title: "You got through it.", msg: "That took real courage. Your body is calmer now. You are safe and you are okay." }
+  },
+  anxiety: {
+    label: "Anxiety relief",
+    glow: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(74,158,255,0.07) 0%, transparent 70%)",
+    color: "#4a9eff",
+    phases: [
+      { name: "Inhale",  dur: 4, msgs: ["Breathe in calm and clarity.", "You don't have to solve everything now.", "Just this breath. That's enough.", "Slow and steady. You're doing it."] },
+      { name: "Hold",    dur: 4, msgs: ["Hold. Feel the stillness.", "You are bigger than your thoughts.", "This moment is safe.", "Let the thoughts float past."] },
+      { name: "Exhale",  dur: 4, msgs: ["Breathe out the worry.", "Let go of what you can't control.", "Release. You are enough.", "Fully out. Good."] },
+      { name: "Hold",    dur: 4, msgs: ["Empty. Pause. Reset.", "Peace lives inside you.", "You are more than this anxiety.", "Present. Here. Safe."] },
+    ],
+    cycles: 5,
+    done: { emoji: "🌊", title: "Anxiety eased.", msg: "Your nervous system has shifted. The thoughts will be quieter now. You handled this." }
+  },
+  sleep: {
+    label: "Sleep breathing",
+    glow: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(140,100,255,0.07) 0%, transparent 70%)",
+    color: "#a78bff",
+    phases: [
+      { name: "Inhale",  dur: 4, msgs: ["Breathe in quietly. The night is safe.", "Let your body get heavy.", "Tomorrow can wait.", "Just this breath now."] },
+      { name: "Hold",    dur: 7, msgs: ["Hold... let the stillness fill you.", "You did enough today.", "Nothing needs solving tonight.", "Let your mind go soft."] },
+      { name: "Exhale",  dur: 8, msgs: ["Exhale and let go of the day.", "Release every thought slowly.", "Drifting... sinking... safe.", "Let sleep find you."] },
+    ],
+    cycles: 4,
+    done: { emoji: "🌙", title: "Sleep is near.", msg: "Put your phone down. Close your eyes. You did enough today. Rest now." }
+  },
+  anger: {
+    label: "Cooling down",
+    glow: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,160,60,0.07) 0%, transparent 70%)",
+    color: "#ffaa40",
+    phases: [
+      { name: "Inhale",  dur: 4, msgs: ["Breathe in. You are in control.", "Your response is your power.", "Pause before you act.", "Strength is staying calm."] },
+      { name: "Hold",    dur: 4, msgs: ["Hold. Don't react yet.", "You are bigger than this moment.", "Wait. Think. Choose.", "Real power is self-control."] },
+      { name: "Exhale",  dur: 6, msgs: ["Let the heat leave your body.", "Release the anger slowly.", "You don't have to carry this.", "Breathing out the fire."] },
+      { name: "Hold",    dur: 2, msgs: ["Still. Calm. Clear.", "You chose peace.", "That takes real maturity.", "Ready to respond, not react."] },
+    ],
+    cycles: 5,
+    done: { emoji: "🌿", title: "Anger cooled.", msg: "You chose calm over reaction. That is genuine strength — most people can't do that." }
+  },
+  confidence: {
+    label: "Confidence boost",
+    glow: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(74,255,180,0.07) 0%, transparent 70%)",
+    color: "#4affb4",
+    phases: [
+      { name: "Inhale",  dur: 5, msgs: ["Breathe in strength and clarity.", "You have prepared. Trust that.", "You belong in that room.", "This energy is your fuel."] },
+      { name: "Hold",    dur: 2, msgs: ["Hold your power.", "You are ready.", "Believe what you know.", "This is your moment."] },
+      { name: "Exhale",  dur: 5, msgs: ["Release the nerves. Keep the energy.", "Let doubt leave your body.", "Breathe out the fear.", "What remains is confidence."] },
+    ],
+    cycles: 4,
+    done: { emoji: "⚡", title: "You are ready.", msg: "The nervousness you feel is just energy. Channel it forward. You've prepared. Now go show them." }
+  }
+};
+
+let active = null;
+let running = false;
+let timer = null;
+let cycle = 0;
+let phaseIdx = 0;
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  running = false;
+  clearTimeout(timer);
+  document.getElementById('glowBg').style.background = '';
+  show('homeScreen');
+}
+
+function start(modeKey) {
+  active = MODES[modeKey];
+  cycle = 0;
+  phaseIdx = 0;
+  msgIndex = 0;
+  running = true;
+
+  document.getElementById('bFeeling').textContent = active.label;
+  document.getElementById('glowBg').style.background = active.glow;
+  document.getElementById('outerRing').style.borderColor = active.color + '22';
+
+  show('breatheScreen');
+  runPhase();
+}
+
+let msgIndex = 0;
+
+function runPhase() {
+  if (!running) return;
+  const phase = active.phases[phaseIdx];
+
+  document.getElementById('bPhase').textContent = phase.name;
+
+  // Pick a fresh motivational message each phase
+  const msg = phase.msgs[msgIndex % phase.msgs.length];
+  msgIndex++;
+  fadeMsg(msg);
+
+  // Circle animation
+  const circle = document.getElementById('bCircle');
+  if (phase.name === 'Inhale') {
+    circle.style.transition = `transform ${phase.dur}s ease-in-out, box-shadow ${phase.dur}s ease-in-out`;
+    circle.style.transform = 'scale(1.3)';
+    circle.style.boxShadow = `0 0 80px ${active.color}22`;
+  } else if (phase.name === 'Exhale') {
+    circle.style.transition = `transform ${phase.dur}s ease-in-out, box-shadow ${phase.dur}s ease-in-out`;
+    circle.style.transform = 'scale(0.85)';
+    circle.style.boxShadow = 'none';
+  } else {
+    circle.style.transition = 'transform 0.5s ease';
+  }
+
+  countdown(phase.dur, () => {
+    if (!running) return;
+    phaseIdx++;
+    if (phaseIdx >= active.phases.length) {
+      phaseIdx = 0;
+      cycle++;
+      if (cycle >= active.cycles) {
+        finish();
+        return;
+      }
+    }
+    runPhase();
+  });
+}
+
+function fadeMsg(text) {
+  const el = document.getElementById('bMsg');
+  el.style.transition = 'opacity 0.5s ease';
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = text;
+    el.style.opacity = '1';
+  }, 500);
+}
+
+function countdown(secs, done) {
+  if (!running) return;
+  document.getElementById('bNum').textContent = secs;
+  if (secs === 0) { done(); return; }
+  timer = setTimeout(() => countdown(secs - 1, done), 1000);
+}
+
+function finish() {
+  running = false;
+  const d = active.done;
+  document.getElementById('doneEmoji').textContent = d.emoji;
+  document.getElementById('doneTitle').textContent = d.title;
+  document.getElementById('doneMsg').textContent = d.msg;
+  show('doneScreen');
+}
+</script>
+</body>
+</html>
